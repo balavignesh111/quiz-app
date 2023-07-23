@@ -9,11 +9,12 @@ const resetBtnElement = document.querySelector('.reset-btn');
 
 /* steps tp solve
 1. fetch data from arr of obj.
-2. score updation on clicking next btn
+2. score updation on clicking submit btn.
 3. if clicked on prev selected answer should be visible.
 4. submit btn to show result score.
 5. reset option to unselect all the values.
 */
+
 // gv
 let index = 0;
 let score = 0;
@@ -54,7 +55,91 @@ const questions = [
     ],
     selected: undefined,
     correct: 0
-}
+  },
+  {
+    id: 4,
+    question_string: "Mount Everest, the world's highest peak, is located in which mountain range?",
+    options: [
+        "Andes",
+        "Himalayas",
+        "Rocky Mountains",
+        "Alps"
+    ],
+    selected: undefined,
+    correct: 1
+  },
+  {
+    id: 5,
+    question_string: "Which country is the largest producer of coffee in the world?",
+    options: [
+        "Colombia",
+        "Brazil",
+        "Vietnam",
+        "Ethiopia"
+    ],
+    selected: undefined,
+    correct: 1
+  },
+  {
+    id: 6,
+    question_string: "Which European city is known as the 'City of Canals'?",
+    options: [
+        "Venice",
+        "Amsterdam",
+        "Copenhagen",
+        "Bruges"
+    ],
+    selected: undefined,
+    correct: 0
+  },
+  {
+    id: 7,
+    question_string: "The Great Barrier Reef, one of the world's most extensive coral reef systems, is located off the coast of which country?",
+    options: [
+        "Australia",
+        "Indonesia",
+        "Belize",
+        "Brazil"
+    ],
+    selected: undefined,
+    correct: 0
+  },
+  {
+    id: 8,
+    question_string: "Which African country is known as the 'Land of a Thousand Hills'?",
+    options: [
+        "Rwanda",
+        "Kenya",
+        "Tanzania",
+        "Uganda"
+    ],
+    selected: undefined,
+    correct: 0
+  },
+  {
+    id: 9,
+    question_string: "The city of Istanbul is located in two continents. Which continents are they?",
+    options: [
+        "Asia and Europe",
+        "Europe and Africa",
+        "Asia and Africa",
+        "Asia and Australia"
+    ],
+    selected: undefined,
+    correct: 0
+  },
+  {
+    id: 10,
+    question_string: "Machu Picchu, an ancient Incan citadel, is located in which country?",
+    options: [
+        "Peru",
+        "Mexico",
+        "Bolivia",
+        "Chile"
+    ],
+    selected: undefined,
+    correct: 0
+  }
 ];
 
 // functions
@@ -62,46 +147,69 @@ function init(){
   index = 0;
   score = 0;
   updateQAndAnswer(index);
+  checkOption();
+  questions.forEach((element)=>{
+    element.selected = undefined;
+  });
+  prevBtnElement.classList.add('disabled-btn');
+  nextBtnElement.classList.remove('disabled-btn');
 }
 
+// to remove all the selected options
 const checkOption = ()=>{
   for(let i=0;i<optionsElement.length;i++){
     optionsElement[i].classList.length === 2 ? '': optionsElement[i].classList.remove('selected-btn');
   }
 }
 
+// it calc the score
 const updateScore = ()=>{
-  if(questions[index].options[questions[index].correct] === questions[index].selected){
-    score++;
+  for(let i=0;i<questions.length;i++){
+    if(questions[i].options[questions[i].correct] === questions[i].selected){
+      score++;
+    }
   }
-  console.log(score)
 }
 
+// it updates the value in arr of objects
 const selectedOption = (element)=>{
   if(element.classList.length === 2){
     checkOption();
     element.classList.add('selected-btn');
-    console.log(element.innerText);
-    questions[index].selected = element.innerText;
+    questions[index].selected = element.value;
   }else{
     element.classList.remove('selected-btn');
   }
 }
 
+// update the questions and answer
 const updateQAndAnswer = (index)=>{
   questionElement.innerText = questions[index].question_string;
   for(let i=0;i<optionsElement.length;i++){
-    optionsElement[i].innerText = questions[index].options[i];
+    optionsElement[i].textContent = questions[index].options[i];
+    optionsElement[i].value = questions[index].options[i];
   }
 }
 
-
-for(let i=0;i<optionsElement.length;i++){
-  optionsElement[i].addEventListener('click',()=>(selectedOption(optionsElement[i])));
+// functions to display the selected options
+const displaySelectedOptions = (index)=>{
+  if(questions[index].selected !== undefined){
+    for(let i=0;i<optionsElement.length;i++){
+      (questions[index].selected === optionsElement[i].innerText) ? optionsElement[i].classList.add('selected-btn'): '';
+    }
+  }
 }
+
+// it listens the event for all the btn...
+for(let i=0;i<optionsElement.length;i++){
+  optionsElement[i].addEventListener('click',()=>(
+    selectedOption(optionsElement[i])));
+}
+
 // eventListeners
 
 nextBtnElement.addEventListener('click',()=>{
+  checkOption();
   if(index < questions.length){
     index++;
     updateQAndAnswer(index);
@@ -111,10 +219,12 @@ nextBtnElement.addEventListener('click',()=>{
     if(index === questions.length-1){
       nextBtnElement.classList.add('disabled-btn');
     }
+    displaySelectedOptions(index);
   } 
 })
 
 prevBtnElement.addEventListener('click',()=>{
+  checkOption();
   if(index < questions.length){
     if(index === questions.length-1){
       nextBtnElement.classList.remove('disabled-btn');
@@ -124,9 +234,15 @@ prevBtnElement.addEventListener('click',()=>{
     if(index === 0){
       prevBtnElement.classList.add('disabled-btn');
     }
+    displaySelectedOptions(index);
   }
 })
 
 submitBtnElement.addEventListener('click',()=>{
   updateScore();
+  alert(`Your score ${score} / ${questions.length}`);
 })
+
+resetBtnElement.addEventListener('click',()=>(init()))
+
+init();
